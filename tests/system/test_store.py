@@ -1,5 +1,5 @@
 import json
-# from unittest.mock import patch
+from unittest.mock import patch
 
 from models.item import ItemModel
 from models.store import StoreModel
@@ -15,12 +15,12 @@ class StoreTest(BaseTest):
             self.assertDictEqual({'id': 1, 'name': 'test_store', 'items': []}, json.loads(resp.data.decode()))
             self.assertIsNotNone(StoreModel.find_by_name('test_store'))
 
-    # def test_create_store_calls_save_to_db(self):
-    #     with patch('section7.starter_code.models.store.StoreModel.save_to_db') as patched_save:
-    #         with self.app() as client:
-    #             client.post('/store/test_store')
-    #
-    #             patched_save.assert_called_with()
+    def test_create_store_calls_save_to_db(self):
+        with patch('models.store.StoreModel.save_to_db') as patched_save:
+            with self.app() as client:
+                client.post('/store/test_store')
+
+                patched_save.assert_called_with()
 
     def test_create_duplicate_store_with_save_to_db(self):
         with self.app() as client:
@@ -57,14 +57,14 @@ class StoreTest(BaseTest):
                 self.assertDictEqual({'message': 'Store deleted'}, json.loads(resp.data.decode()))
                 self.assertEqual(200, resp.status_code)
 
-    # def test_delete_store_calls_delete_from_db(self):
-    #     with patch('section7.starter_code.models.store.StoreModel.delete_from_db') as mocked_delete:
-    #         with self.app() as client:
-    #             with self.app_context():
-    #                 StoreModel('test_store').save_to_db()
-    #                 client.delete('/store/test_store')
-    #
-    #                 mocked_delete.assert_called_with()
+    def test_delete_store_calls_delete_from_db(self):
+        with patch('models.store.StoreModel.delete_from_db') as mocked_delete:
+            with self.app() as client:
+                with self.app_context():
+                    StoreModel('test_store').save_to_db()
+                    client.delete('/store/test_store')
+
+                    mocked_delete.assert_called_with()
 
     def test_delete_store_not_found(self):
         with self.app() as client:
